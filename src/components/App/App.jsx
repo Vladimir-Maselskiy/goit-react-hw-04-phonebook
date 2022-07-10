@@ -14,9 +14,10 @@ export function App() {
   useEffect(() => {
     if (isFirstLoad) {
       setIsFirstLoad(false);
-      const contacts = localStorage.getItem('contacts');
-      if (contacts) {
-        setContacts(JSON.parse(contacts));
+      const localStorageContacts = localStorage.getItem('contacts');
+
+      if (localStorageContacts !== '[]') {
+        setContacts(JSON.parse(localStorageContacts));
         return;
       }
       setContacts(defaultContacts);
