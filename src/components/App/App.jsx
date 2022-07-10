@@ -1,82 +1,68 @@
+import { useEffect, useState } from 'react';
 import { nanoid } from 'nanoid';
-import { Component } from 'react';
 import { Contacts } from '../Contacts/Contacts';
 import Filter from '../Filter/Filter';
 import { Form } from '../Form/Form';
 import { Container, Title } from './App.styled';
 import defaultContacts from '../data/contacts';
 
-export class App extends Component {
-  state = {
-    contacts: [],
-    filter: '',
-  };
+export function App() {
+  const [contacts, setContacts] = useState([]);
+  const [filter, setFilter] = useState('');
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
 
-  componentDidMount() {
-    console.log('componentDidMount');
-    const contacts = localStorage.getItem('contacts');
-    if (contacts) {
-      this.setState({ contacts: JSON.parse(contacts) });
-      return;
+  useEffect(() => {
+    if (isFirstLoad) {
+      setIsFirstLoad(false);
+      const contacts = localStorage.getItem('contacts');
+      if (contacts) {
+        setContacts(JSON.parse(contacts));
+        return;
+      }
+      setContacts(defaultContacts);
     }
-    this.setState({ contacts: defaultContacts });
-  }
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [isFirstLoad, contacts]);
 
-  componentDidUpdate(_, prevState) {
-    console.log('componentDidUpdate');
-    if (prevState.contacts !== this.state.contacts) {
-      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
-    }
-  }
-
-  handleFormSubmit = data => {
+  function handleFormSubmit(data) {
     const { name, number } = data;
     if (
-      this.state.contacts.find(
+      contacts.find(
         contact => contact.name.toLowerCase() === name.toLowerCase()
       )
     ) {
       alert(`${name} is already in contacts`);
       return;
     }
-    this.setState({
-      contacts: [{ name, number, id: nanoid() }, ...this.state.contacts],
-    });
+    setContacts([{ name, number, id: nanoid() }, ...contacts]);
     return true;
-  };
+  }
 
-  handlerDeleteButton = id => {
-    this.setState({
-      contacts: this.state.contacts.filter(contact => contact.id !== id),
-    });
-  };
+  function handlerDeleteButton(id) {
+    setContacts(contacts.filter(contact => contact.id !== id));
+  }
 
-  handleFilterChange = event => {
-    this.setState({ filter: event.target.value });
-  };
+  function handleFilterChange(event) {
+    setFilter(event.target.value);
+  }
 
-  getVisibleContacts = () => {
-    return this.state.contacts.filter(contact =>
-      contact.name.toLowerCase().includes(this.state.filter.toLowerCase())
-    );
-  };
-
-  render() {
-    return (
-      <Container>
-        React homework template
-        <Form onSubmit={this.handleFormSubmit} />
-        <Title>Find contacts by name</Title>
-        <Filter
-          value={this.state.filter}
-          onFilterChange={this.handleFilterChange}
-        />
-        <Title>Contacts</Title>
-        <Contacts
-          contacts={this.getVisibleContacts()}
-          onDelete={this.handlerDeleteButton}
-        />
-      </Container>
+  function getVisibleContacts() {
+    return contacts.filter(contact =>
+      contact.name.toLowerCase().includes(filter.toLowerCase())
     );
   }
+
+  return (
+    <Container>
+      React homework template
+      <Form onSubmit={handleFormSubmit} />
+      <Title>Find contacts by name</Title>
+      <Filter value={filter} onFilterChange={handleFilterChange} />
+      <Title>Contacts</Title>
+      <Contacts
+        contacts={getVisibleContacts()}
+        onDelete={handlerDeleteButton}
+      />
+    </Container>
+  );
 }
