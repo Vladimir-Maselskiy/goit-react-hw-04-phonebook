@@ -16,7 +16,7 @@ export function App() {
       setIsFirstLoad(false);
       const localStorageContacts = localStorage.getItem('contacts');
 
-      if (localStorageContacts !== '[]') {
+      if (localStorageContacts !== '[]' && localStorageContacts !== null) {
         setContacts(JSON.parse(localStorageContacts));
         return;
       }
