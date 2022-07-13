@@ -8,7 +8,7 @@ export default function ListItems(props) {
       {contacts.map(contact => {
         const { name, number, id } = contact;
         return (
-          <ListItem key={contact.id}>
+          <ListItem key={id}>
             {name} {number}
             <button id={id} onClick={() => onDelete(id)}>
               Delete
