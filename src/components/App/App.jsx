@@ -1,29 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { nanoid } from 'nanoid';
 import { Contacts } from '../Contacts/Contacts';
 import Filter from '../Filter/Filter';
 import { Form } from '../Form/Form';
 import { Container, Title } from './App.styled';
 import defaultContacts from '../data/contacts';
+import useLocalStorage from 'components/customHooks/useLocalStorage';
 
 export function App() {
-  const [contacts, setContacts] = useState([]);
+  const [contacts, setContacts] = useLocalStorage('contacts', defaultContacts);
   const [filter, setFilter] = useState('');
-  const [isFirstLoad, setIsFirstLoad] = useState(true);
-
-  useEffect(() => {
-    if (isFirstLoad) {
-      setIsFirstLoad(false);
-      const localStorageContacts = localStorage.getItem('contacts');
-
-      if (localStorageContacts !== '[]' && localStorageContacts !== null) {
-        setContacts(JSON.parse(localStorageContacts));
-        return;
-      }
-      setContacts(defaultContacts);
-    }
-    localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [isFirstLoad, contacts]);
 
   function handleFormSubmit(data) {
     const { name, number } = data;
